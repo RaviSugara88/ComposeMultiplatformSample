@@ -1,5 +1,6 @@
 package com.example.composemultiplateformex
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -8,14 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.AbsoluteCutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DismissibleNavigationDrawer
@@ -30,7 +25,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.PermanentDrawerSheet
 import androidx.compose.material3.PermanentNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,11 +38,24 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import com.example.composemultiplateformex.ui.LoginScree
+import com.example.composemultiplateformex.ui.data.HomePage
+import com.example.composemultiplateformex.ui.screen.EmailList
+import com.example.composemultiplateformex.ui.screen.EmailListUI
+import com.example.composemultiplateformex.ui.screen.ErrorScreen
+import com.example.composemultiplateformex.ui.screen.LoadingScreen
+import com.example.composemultiplateformex.ui.viewmodel.ProductsViewModel
+import com.example.composemultiplateformex.utils.CustomMessage
+import com.example.composemultiplateformex.utils.emailData
+import com.example.composemultiplateformex.utils.items
+import dev.icerock.moko.mvvm.compose.getViewModel
+import dev.icerock.moko.mvvm.compose.viewModelFactory
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Composable
@@ -69,36 +76,12 @@ fun MyAppTheme(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App() {
-    data class BottomNavigationItem(
-        val title: String,
-        val selectedIcon: ImageVector,
-        val unselectedIcon: ImageVector,
-        val hasNews: Boolean,
-        val badgeCount: Int? = null
-    )
-    MyAppTheme {
 
-        val items = listOf(
-            BottomNavigationItem(
-                title = "Home",
-                selectedIcon = Icons.Filled.Home,
-                unselectedIcon = Icons.Outlined.Home,
-                hasNews = false,
-            ),
-            BottomNavigationItem(
-                title = "Chat",
-                selectedIcon = Icons.Filled.Email,
-                unselectedIcon = Icons.Outlined.Email,
-                hasNews = false,
-                badgeCount = 45
-            ),
-            BottomNavigationItem(
-                title = "Settings",
-                selectedIcon = Icons.Filled.Settings,
-                unselectedIcon = Icons.Outlined.Settings,
-                hasNews = true,
-            ),
-        )
+    MyAppTheme {
+        val productsViewModel =
+            getViewModel(Unit, viewModelFactory { ProductsViewModel() })
+
+
         var selectedItemIndex by rememberSaveable {
             mutableStateOf(0)
         }
@@ -108,10 +91,10 @@ fun App() {
             color = MaterialTheme.colorScheme.background
         ){
             val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-
+            val emailListData = emailData()
             /** [pinnedScrollBehavior] Change top bar  color when scroll behavior
              *  [enterAlwaysScrollBehavior] hide top bar when scroll up and show when scroll down
-             *  [exitUntilCollapsedScrollBehavior] hide top bar when scroll up and show when scroll down all*/
+             *  [exitUntilCollapsedScrollBehavior] hide top bar when scroll up and show when scroll down all */
 
             val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed,)
             val scope = rememberCoroutineScope()
@@ -123,6 +106,7 @@ fun App() {
              * 2. [PermanentNavigationDrawer] full screen drawer not able to close
              * 3. [DismissibleNavigationDrawer] full screen drawer */
 
+            
             ModalNavigationDrawer(
                 drawerContent = {
                     ModalDrawerSheet {
@@ -161,6 +145,7 @@ fun App() {
                 },
                 drawerState =drawerState
             ){
+
                 Scaffold(
                     modifier = Modifier.fillMaxSize()
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -191,7 +176,9 @@ fun App() {
                                         contentDescription = "Mark as favorite"
                                     )
                                 }
-                                IconButton(onClick = { /*TODO*/ }) {
+                                IconButton(onClick = {
+
+                                }) {
                                     Icon(
                                         imageVector = Icons.Default.Edit,
                                         contentDescription = "Edit notes"
@@ -208,6 +195,7 @@ fun App() {
                                     selected = selectedItemIndex ==index,
                                     onClick = {
                                         selectedItemIndex = index
+
                                     },
                                     //
                                     label = {
@@ -241,20 +229,37 @@ fun App() {
                     }
 
                 ) { values ->
-
-                    //   LoginScreen(values)
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(values)
+                    Column(
+                        Modifier.fillMaxSize().padding(values)
                     ) {
-                        items(100) {
-                            Text(
-                                text = "Item$it",
-                                modifier = Modifier.padding(16.dp)
-                            )
+                        when(selectedItemIndex){
+                            0->{
+                                HomePage(productsViewModel)
+                            }
+                            1->{
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                ) {
+                                    items(emailListData.size) {po ->
+                                        EmailListUI(
+                                            EmailList(
+                                                "${emailListData[po].emailTitle}",
+                                                "${emailListData[po].subject}",
+                                                "${emailListData[po].des}"
+                                            )
+                                        )
+                                    }
+                                }
+
+                            }
+                            2->{
+                                LoadingScreen()
+                            }
                         }
                     }
+
+
 
                 }
 

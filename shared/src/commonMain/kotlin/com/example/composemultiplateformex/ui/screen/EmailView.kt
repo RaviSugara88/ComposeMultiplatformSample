@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -110,6 +111,7 @@ fun EmailDes(title: String) {
         fontSize = 15.sp,
         textAlign = TextAlign.Start,
         maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         color = com.example.composemultiplateformex.ui.theme.Color.lightGray
     )
 }
@@ -124,6 +126,7 @@ fun EmailTitle(title: String) {
         fontSize = 18.sp,
         textAlign = TextAlign.Start,
         maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         color = Color.Black
     )
 }

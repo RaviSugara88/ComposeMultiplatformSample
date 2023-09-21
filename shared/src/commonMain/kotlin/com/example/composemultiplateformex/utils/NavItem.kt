@@ -24,16 +24,16 @@ val items = listOf(
         hasNews = false,
     ),
     BottomNavigationItem(
-        title = "Chat",
+        title = "Mail",
         selectedIcon = Icons.Filled.Email,
         unselectedIcon = Icons.Outlined.Email,
         hasNews = false,
         badgeCount = 45
     ),
-    BottomNavigationItem(
+/*    BottomNavigationItem(
         title = "Settings",
         selectedIcon = Icons.Filled.Settings,
         unselectedIcon = Icons.Outlined.Settings,
         hasNews = true,
-    ),
+    ),*/
 )

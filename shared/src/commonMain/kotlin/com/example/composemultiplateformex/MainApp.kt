@@ -80,10 +80,11 @@ fun App() {
     MyAppTheme {
         val productsViewModel =
             getViewModel(Unit, viewModelFactory { ProductsViewModel() })
-
-
         var selectedItemIndex by rememberSaveable {
             mutableStateOf(0)
+        }
+        var appTitle by rememberSaveable{
+            mutableStateOf("Product List")
         }
         Surface (
             modifier = Modifier
@@ -152,7 +153,7 @@ fun App() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                Text(text = "My App")
+                                Text(text = appTitle)
                             },
                             navigationIcon = {
                                 /*back press drawal farst item*/
@@ -234,9 +235,11 @@ fun App() {
                     ) {
                         when(selectedItemIndex){
                             0->{
+                                appTitle = "Product List"
                                 HomePage(productsViewModel)
                             }
                             1->{
+                                appTitle = "Product Email"
                                 LazyColumn(
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -253,18 +256,14 @@ fun App() {
                                 }
 
                             }
-                            2->{
+                           /* 2->{
+                                appTitle = "Support"
                                 LoadingScreen()
-                            }
+                            }*/
                         }
                     }
-
-
-
                 }
-
             }
-
 
         }
 
